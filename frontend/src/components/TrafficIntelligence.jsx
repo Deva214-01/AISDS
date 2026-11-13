@@ -1,9 +1,9 @@
-
+﻿
 import { useEffect, useState } from "react";
 import "./TrafficIntelligence.css";
 import BrowserCamera from "./BrowserCamera";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
+const API = import.meta.env.VITE_API_BASE_URL || "https://aisds.onrender.com";
 
 export default function TrafficIntelligence({
   cameraEnabled,
@@ -52,28 +52,28 @@ export default function TrafficIntelligence({
 
   const metrics = [
     {
-      icon: "🚘",
+      icon: "ðŸš˜",
       label: "Vehicles detected",
       value: currentStats?.total_vehicles ?? 0,
       description: "Latest camera frame",
       color: "cyan",
     },
     {
-      icon: "🏍️",
+      icon: "ðŸï¸",
       label: "Motorcycles",
       value: currentStats?.motorcycles ?? 0,
       description: "Latest camera frame",
       color: "purple",
     },
     {
-      icon: "🛣️",
+      icon: "ðŸ›£ï¸",
       label: "Unique motorcycles",
       value: currentStats?.session_motorcycles ?? 0,
       description: "Current session",
       color: "lime",
     },
     {
-      icon: "🚨",
+      icon: "ðŸš¨",
       label: "Helmet alerts",
       value: alerts.length,
       description: "Reported violations",
@@ -88,14 +88,14 @@ export default function TrafficIntelligence({
       <header className="helmet-hero">
         <div className="helmet-hero-content">
           <div className="helmet-brand">
-            <span className="helmet-brand-icon">🪖</span>
+            <span className="helmet-brand-icon">ðŸª–</span>
             <span>TRAFFICX <b>AI</b></span>
             <span className="helmet-brand-divider">/</span>
             <span className="helmet-brand-section">SAFETY SYSTEM</span>
           </div>
 
           <div className="helmet-heading">
-            <span className="ti-eyebrow">INTELLIGENT ROAD SAFETY · MODULE 01</span>
+            <span className="ti-eyebrow">INTELLIGENT ROAD SAFETY Â· MODULE 01</span>
             <h1>Helmet <span>Detection</span></h1>
             <p>
               AI-powered rider monitoring. Detect unsafe riding,
@@ -105,15 +105,15 @@ export default function TrafficIntelligence({
 
           <div className="helmet-hero-bottom">
             <div className="helmet-feature">
-              <span>📡</span>
+              <span>ðŸ“¡</span>
               <span>REAL-TIME MONITORING</span>
             </div>
             <div className="helmet-feature">
-              <span>🤖</span>
+              <span>ðŸ¤–</span>
               <span>AI COMPUTER VISION</span>
             </div>
             <div className="helmet-feature">
-              <span>🛡️</span>
+              <span>ðŸ›¡ï¸</span>
               <span>ROAD SAFETY</span>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function TrafficIntelligence({
         <div className="helmet-hero-visual">
           <div className="helmet-orbit orbit-one"></div>
           <div className="helmet-orbit orbit-two"></div>
-          <div className="helmet-center-icon">🪖</div>
+          <div className="helmet-center-icon">ðŸª–</div>
           <span className="helmet-orbit-label">AI ACTIVE</span>
         </div>
       </header>
@@ -135,7 +135,7 @@ export default function TrafficIntelligence({
             <strong>{cameraRunning ? "Monitoring active" : "Monitoring offline"}</strong>
             <span>
               {cameraRunning
-                ? "Camera connected · Processing live frames"
+                ? "Camera connected Â· Processing live frames"
                 : "Camera is waiting for activation"}
             </span>
           </div>
@@ -144,14 +144,14 @@ export default function TrafficIntelligence({
         <div className="helmet-toolbar-right">
           <span className="helmet-system-tag">SYSTEM STATUS</span>
           <span className={`helmet-status-pill ${cameraRunning ? "online" : "offline"}`}>
-            {cameraRunning ? "● ONLINE" : "● OFFLINE"}
+            {cameraRunning ? "â— ONLINE" : "â— OFFLINE"}
           </span>
         </div>
       </section>
 
       {cameraError && (
         <div className="ti-error">
-          <span>⚠️</span> {cameraError}
+          <span>âš ï¸</span> {cameraError}
         </div>
       )}
 
@@ -160,9 +160,9 @@ export default function TrafficIntelligence({
         <div className="helmet-section-heading">
           <div>
             <span className="ti-eyebrow">LIVE ANALYTICS</span>
-            <h2>Detection Overview <span>📊</span></h2>
+            <h2>Detection Overview <span>ðŸ“Š</span></h2>
           </div>
-          <span className="helmet-updated">↻ AUTO REFRESH · 2 SEC</span>
+          <span className="helmet-updated">â†» AUTO REFRESH Â· 2 SEC</span>
         </div>
 
         <div className="helmet-metrics">
@@ -188,7 +188,7 @@ export default function TrafficIntelligence({
           <div className="helmet-panel-heading">
             <div>
               <span className="ti-eyebrow">VISION ENGINE / 01</span>
-              <h2>Live Camera Feed <span>📹</span></h2>
+              <h2>Live Camera Feed <span>ðŸ“¹</span></h2>
               <p>Visual monitoring and AI detection output</p>
             </div>
 
@@ -203,13 +203,13 @@ export default function TrafficIntelligence({
               <>
                 <BrowserCamera enabled={cameraEnabled} />
                 <div className="helmet-camera-overlay">
-                  <span>📡 TRAFFICX VISION</span>
+                  <span>ðŸ“¡ TRAFFICX VISION</span>
                   <span>AI MONITORING</span>
                 </div>
               </>
             ) : (
               <div className="ti-placeholder helmet-placeholder">
-                <span className="helmet-placeholder-icon">📹</span>
+                <span className="helmet-placeholder-icon">ðŸ“¹</span>
                 <strong>Camera is waiting</strong>
                 <p>Activate your camera to start AI-powered helmet detection.</p>
                 <span className="helmet-placeholder-hint">READY TO INITIALIZE</span>
@@ -219,7 +219,7 @@ export default function TrafficIntelligence({
 
           <div className="helmet-camera-footer">
             <div className="helmet-camera-info">
-              <span className="helmet-camera-info-icon">🎯</span>
+              <span className="helmet-camera-info-icon">ðŸŽ¯</span>
               <div>
                 <strong>Detection engine</strong>
                 <span>YOLO-based vehicle and helmet analysis</span>
@@ -232,7 +232,7 @@ export default function TrafficIntelligence({
                 className="helmet-action-button start"
                 onClick={onStartCamera}
               >
-                <span>▶</span> Start Monitoring
+                <span>â–¶</span> Start Monitoring
               </button>
             ) : (
               <button
@@ -240,7 +240,7 @@ export default function TrafficIntelligence({
                 className="helmet-action-button stop"
                 onClick={onStopCamera}
               >
-                <span>■</span> Stop Monitoring
+                <span>â– </span> Stop Monitoring
               </button>
             )}
           </div>
@@ -251,13 +251,13 @@ export default function TrafficIntelligence({
           <div className="helmet-panel-heading">
             <div>
               <span className="ti-eyebrow">SAFETY INTELLIGENCE / 02</span>
-              <h2>Violation Center <span>🚨</span></h2>
+              <h2>Violation Center <span>ðŸš¨</span></h2>
               <p>Helmet safety alerts from the backend</p>
             </div>
           </div>
 
           <div className="helmet-alert-summary">
-            <div className="helmet-alert-summary-icon">⚠️</div>
+            <div className="helmet-alert-summary-icon">âš ï¸</div>
             <div>
               <strong>{alerts.length}</strong>
               <span>Reported helmet alerts</span>
@@ -267,7 +267,7 @@ export default function TrafficIntelligence({
           <div className="helmet-alert-content">
             {alerts.length === 0 ? (
               <div className="helmet-empty">
-                <span>🛡️</span>
+                <span>ðŸ›¡ï¸</span>
                 <strong>No active alerts</strong>
                 <p>
                   No helmet violations have been reported by the detection
@@ -279,7 +279,7 @@ export default function TrafficIntelligence({
               <div className="ti-alert-list">
                 {alerts.slice(0, 10).map((alert, index) => (
                   <div className="helmet-alert-item" key={alert.id || index}>
-                    <span className="helmet-alert-icon">🚨</span>
+                    <span className="helmet-alert-icon">ðŸš¨</span>
                     <div className="helmet-alert-details">
                       <strong>Possible No-Helmet Violation</strong>
                       <span>{alert.timestamp || "Time unavailable"}</span>
@@ -294,7 +294,7 @@ export default function TrafficIntelligence({
           </div>
 
           <div className="helmet-alert-footer">
-            <span>🔔 ALERT FEED</span>
+            <span>ðŸ”” ALERT FEED</span>
             <span>MAX 10 RECENT EVENTS</span>
           </div>
         </article>
@@ -302,7 +302,7 @@ export default function TrafficIntelligence({
 
       {/* SAFETY INFORMATION */}
       <section className="helmet-safety-strip">
-        <div className="helmet-safety-icon">💡</div>
+        <div className="helmet-safety-icon">ðŸ’¡</div>
         <div>
           <span className="ti-eyebrow">ROAD SAFETY INSIGHT</span>
           <h3>Every ride deserves protection.</h3>
@@ -311,14 +311,15 @@ export default function TrafficIntelligence({
             AI-generated alerts should be reviewed before enforcement.
           </p>
         </div>
-        <div className="helmet-safety-emoji">🏍️</div>
+        <div className="helmet-safety-emoji">ðŸï¸</div>
       </section>
 
       <footer className="helmet-footer">
-        <span>🪖 TRAFFICX AI · HELMET DETECTION MODULE</span>
+        <span>ðŸª– TRAFFICX AI Â· HELMET DETECTION MODULE</span>
         <span>BUILT FOR SMARTER & SAFER ROADS</span>
       </footer>
     </main>
   );
 }
+
 

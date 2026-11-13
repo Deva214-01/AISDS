@@ -1,9 +1,9 @@
-
+﻿
 import { useEffect, useMemo, useState } from "react";
 import { Flame, CloudFog, Upload, ScanSearch, AlertCircle } from "lucide-react";
 import "./FireSmokeDetection.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
+const API = import.meta.env.VITE_API_BASE_URL || "https://aisds.onrender.com";
 
 export default function FireSmokeDetection() {
   const [file, setFile] = useState(null);
@@ -157,7 +157,7 @@ export default function FireSmokeDetection() {
           <label className="fs-upload-area" htmlFor="fire-smoke-upload">
             <Upload size={30} />
             <strong>Choose an image</strong>
-            <span>JPG, JPEG, PNG or WEBP · Maximum 10 MB</span>
+            <span>JPG, JPEG, PNG or WEBP Â· Maximum 10 MB</span>
             <input
               id="fire-smoke-upload"
               type="file"
@@ -221,8 +221,8 @@ export default function FireSmokeDetection() {
               </div>
 
               <div className="fs-class-counts">
-                <span>🔥 Fire: <strong>{result.fire_count}</strong></span>
-                <span>🌫️ Smoke: <strong>{result.smoke_count}</strong></span>
+                <span>ðŸ”¥ Fire: <strong>{result.fire_count}</strong></span>
+                <span>ðŸŒ«ï¸ Smoke: <strong>{result.smoke_count}</strong></span>
               </div>
 
               <div className="fs-image-preview">
@@ -267,3 +267,4 @@ export default function FireSmokeDetection() {
     </section>
   );
 }
+

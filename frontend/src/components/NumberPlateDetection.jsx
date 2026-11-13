@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+﻿import React, { useRef, useState } from "react";
 import "./NumberPlateDetection.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
+const API = import.meta.env.VITE_API_BASE_URL || "https://aisds.onrender.com";
 
 export default function NumberPlateDetection() {
   const [file, setFile] = useState(null);
@@ -104,16 +104,16 @@ export default function NumberPlateDetection() {
         </p>
 
         <div className="anpr-tags">
-          <span>◈ YOLO Detection</span>
-          <span>▤ EasyOCR</span>
-          <span>◉ AI Recognition</span>
+          <span>â—ˆ YOLO Detection</span>
+          <span>â–¤ EasyOCR</span>
+          <span>â—‰ AI Recognition</span>
         </div>
       </header>
 
       <div className="anpr-layout">
         <section className="anpr-panel">
           <div className="anpr-heading">
-            <div className="anpr-heading-icon">⇧</div>
+            <div className="anpr-heading-icon">â‡§</div>
             <div>
               <h2>Upload Vehicle Image</h2>
               <p>Choose an image containing a visible number plate.</p>
@@ -147,14 +147,14 @@ export default function NumberPlateDetection() {
 
             {!preview ? (
               <>
-                <div className="anpr-upload-symbol">↑</div>
+                <div className="anpr-upload-symbol">â†‘</div>
                 <h3>Drop your vehicle image here</h3>
                 <p>or click to browse files</p>
-                <span>JPG, PNG, WEBP · Maximum 10 MB</span>
+                <span>JPG, PNG, WEBP Â· Maximum 10 MB</span>
               </>
             ) : (
               <>
-                <div className="anpr-upload-symbol">✓</div>
+                <div className="anpr-upload-symbol">âœ“</div>
                 <h3>Image selected successfully</h3>
                 <p>Click to choose another image</p>
               </>
@@ -178,7 +178,7 @@ export default function NumberPlateDetection() {
               onClick={detectPlates}
               disabled={!file || loading}
             >
-              {loading ? "Processing image..." : "⌕  Detect & Extract"}
+              {loading ? "Processing image..." : "âŒ•  Detect & Extract"}
             </button>
 
             <button
@@ -197,12 +197,12 @@ export default function NumberPlateDetection() {
             </div>
           )}
 
-          {error && <div className="anpr-error">⚠ {error}</div>}
+          {error && <div className="anpr-error">âš  {error}</div>}
         </section>
 
         <section className="anpr-panel">
           <div className="anpr-heading">
-            <div className="anpr-heading-icon">⌗</div>
+            <div className="anpr-heading-icon">âŒ—</div>
             <div>
               <h2>Recognition Results</h2>
               <p>Vehicle registration details and confidence scores.</p>
@@ -211,7 +211,7 @@ export default function NumberPlateDetection() {
 
           {!result && !loading && (
             <div className="anpr-empty">
-              <div>▤</div>
+              <div>â–¤</div>
               <h3>No results yet</h3>
               <p>Upload a vehicle image and start detection.</p>
             </div>
@@ -266,7 +266,7 @@ export default function NumberPlateDetection() {
                     <span className={
                       item.plate_text ? "anpr-success" : "anpr-warning"
                     }>
-                      {item.plate_text ? "● EXTRACTED" : "● NOT READ"}
+                      {item.plate_text ? "â— EXTRACTED" : "â— NOT READ"}
                     </span>
                   </div>
 
@@ -280,7 +280,7 @@ export default function NumberPlateDetection() {
                       className="anpr-copy-btn"
                       onClick={() => copyNumber(item.plate_text, index)}
                     >
-                      {copied === index ? "✓ Copied" : "▣ Copy Number"}
+                      {copied === index ? "âœ“ Copied" : "â–£ Copy Number"}
                     </button>
                   )}
 
@@ -329,4 +329,5 @@ export default function NumberPlateDetection() {
     </div>
   );
 }
+
 

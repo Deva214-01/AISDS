@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
+const API = import.meta.env.VITE_API_BASE_URL || "https://aisds.onrender.com";
 
 export default function BrowserCamera({ enabled }) {
   const videoRef = useRef(null);
@@ -148,3 +148,4 @@ export default function BrowserCamera({ enabled }) {
     </div>
   );
 }
+

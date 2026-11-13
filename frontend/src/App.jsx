@@ -1,4 +1,4 @@
-import {
+﻿import {
   LayoutDashboard, Camera, ShieldAlert, CarFront, ScanLine,
   BrainCircuit, HardHat, Flame, UserRound, ChartNoAxesCombined,
   Settings, ChevronLeft, ChevronRight, CheckCircle2, ArrowRight,
@@ -13,7 +13,7 @@ import FireSmokeDetection from "./components/FireSmokeDetection";
 
 import "./App.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
+const API = import.meta.env.VITE_API_BASE_URL || "https://aisds.onrender.com";
 
 const isSupportedVideoFile = (file) =>
   Boolean(file?.name && /\.(mp4|avi|mov|mkv)$/i.test(file.name));
@@ -669,7 +669,7 @@ const seekToAccidentAlert = (seconds) => {
 
       <h1> AISDS</h1><p>Unable to connect to backend.</p>
 
-      <small>Make sure FastAPI is running at http://127.0.0.1:8001.</small><br />
+      <small>Make sure FastAPI is running at https://aisds.onrender.com.</small><br />
 
       <button type="button" onClick={fetchTraffic}>Retry Connection</button>
 
@@ -1039,9 +1039,9 @@ const seekToAccidentAlert = (seconds) => {
 
                 <p><strong>Total Vehicles:</strong> {item.total_vehicles ?? 0}</p>
 
-                <p>Cars: {item.cars ?? 0} · Motorcycles: {item.motorcycles ?? 0}</p>
+                <p>Cars: {item.cars ?? 0} Â· Motorcycles: {item.motorcycles ?? 0}</p>
 
-                <p>Buses: {item.buses ?? 0} · Trucks: {item.trucks ?? 0}</p>
+                <p>Buses: {item.buses ?? 0} Â· Trucks: {item.trucks ?? 0}</p>
 
                 <p><strong>Traffic Density:</strong> {item.traffic_density ?? 0}%</p>
 
@@ -1232,7 +1232,7 @@ const seekToAccidentAlert = (seconds) => {
 
         {(trafficIntelligence.recent_events ?? []).length === 0 ? (
           <div className="recent-events-empty">
-            <span>Å½</span>
+            <span>Ã…Â½</span>
             <strong>No traffic events yet</strong>
             <p>Events will appear here when the congestion level changes.</p>
           </div>
@@ -1415,7 +1415,7 @@ const seekToAccidentAlert = (seconds) => {
 
           <section className="helmet-review-panel" aria-live="polite">
             <div className="helmet-review-heading">
-              <div className="helmet-review-icon"><ShieldAlert size={20}/> </div>
+              <div className="helmet-review-icon"><ShieldAlert size={20}/>Â </div>
               <div><span className="section-kicker">LIVE DETECTION FEED</span><h3>Helmet violation alerts</h3><p>Newest alerts appear first. Open each record and verify the detection.</p></div>
               <span className={`helmet-review-count ${helmetAlerts.length ? "active" : ""}`}>{helmetAlerts.length} {helmetAlerts.length === 1 ? "ALERT" : "ALERTS"}</span>
             </div>
@@ -1795,6 +1795,7 @@ const seekToAccidentAlert = (seconds) => {
 }
 
 export default App;
+
 
 
 
