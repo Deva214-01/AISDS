@@ -1,0 +1,434 @@
+﻿.anpr {
+  --anpr-cyan: #35c9ed;
+  --anpr-blue: #5799f7;
+  padding: 22px;
+  max-width: 1500px;
+  margin: 0 auto;
+  color: var(--text-primary, #e8edf7);
+}
+
+.anpr-hero {
+  padding: 30px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, #101c32, #142b49 65%, #10435a);
+  border: 1px solid rgba(66, 184, 230, .25);
+  margin-bottom: 22px;
+}
+
+.anpr-eyebrow {
+  color: #65d8f5;
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+
+.anpr-live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #3bd79b;
+  border-radius: 50%;
+  margin-right: 7px;
+  box-shadow: 0 0 10px #3bd79b;
+}
+
+.anpr-hero h1 {
+  color: #fff;
+  font-size: clamp(26px, 4vw, 36px);
+  margin: 16px 0 8px;
+  font-weight: 800;
+}
+
+.anpr-hero p {
+  color: #c0d0e2;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 650px;
+}
+
+.anpr-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.anpr-tags span {
+  background: rgba(255,255,255,.09);
+  color: #d9efff;
+  padding: 8px 12px;
+  border-radius: 30px;
+  font-size: 11px;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.anpr-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.anpr-panel {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--border-color, rgba(140,160,190,.2));
+  border-radius: 16px;
+  background: var(--card-bg, #111c2e);
+}
+
+.anpr-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.anpr-heading-icon {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #63d9fa;
+  background: rgba(45,170,220,.13);
+  font-size: 22px;
+}
+
+.anpr-heading h2 {
+  font-size: 16px;
+  margin: 0 0 5px;
+  color: var(--text-primary, #edf4ff);
+}
+
+.anpr-heading p {
+  font-size: 12px;
+  color: var(--text-secondary, #91a0b5);
+  margin: 0;
+}
+
+.anpr-dropzone {
+  border: 1.5px dashed rgba(60,185,235,.48);
+  border-radius: 14px;
+  min-height: 225px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+  background: rgba(40,150,210,.045);
+  transition: .2s;
+}
+
+.anpr-dropzone:hover {
+  background: rgba(40,150,210,.11);
+  border-color: var(--anpr-cyan);
+}
+
+.anpr-upload-symbol {
+  display: grid;
+  place-items: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 15px;
+  background: rgba(40,170,220,.15);
+  color: #5bd5fa;
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.anpr-dropzone h3 {
+  color: var(--text-primary, #fff);
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+
+.anpr-dropzone p,
+.anpr-dropzone span {
+  color: var(--text-secondary, #91a0b5);
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.anpr-preview-wrap {
+  margin-top: 18px;
+  padding: 12px;
+  background: rgba(80,140,200,.06);
+  border-radius: 12px;
+}
+
+.anpr-preview-heading {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--text-secondary, #91a0b5);
+  overflow-wrap: anywhere;
+}
+
+.anpr-preview-wrap img,
+.anpr-annotated img {
+  display: block;
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #080e19;
+  margin-top: 12px;
+}
+
+.anpr-preview-wrap p {
+  color: var(--text-secondary, #91a0b5);
+  font-size: 11px;
+  margin-bottom: 0;
+}
+
+.anpr-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.anpr-detect-btn,
+.anpr-reset-btn {
+  padding: 12px 17px;
+  border: 0;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.anpr-detect-btn {
+  flex: 1;
+  color: #071a2a;
+  background: linear-gradient(100deg, #42d5ec, #68a9ff);
+}
+
+.anpr-detect-btn:disabled,
+.anpr-reset-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.anpr-reset-btn {
+  color: var(--text-primary, #fff);
+  background: rgba(130,150,180,.13);
+  border: 1px solid var(--border-color, rgba(140,160,190,.2));
+}
+
+.anpr-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(40,160,220,.08);
+  color: #5bd5fa;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.anpr-spinner {
+  display: inline-block;
+  width: 23px;
+  height: 23px;
+  border: 2px solid rgba(70,190,240,.2);
+  border-top-color: #48d5ff;
+  border-radius: 50%;
+  animation: anpr-spin .8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes anpr-spin {
+  to { transform: rotate(360deg); }
+}
+
+.anpr-error {
+  color: #ff8585;
+  background: rgba(220,50,50,.09);
+  padding: 12px;
+  border-radius: 9px;
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.anpr-empty {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  color: var(--text-secondary, #91a0b5);
+}
+
+.anpr-empty > div {
+  font-size: 38px;
+  color: #59c8ef;
+  margin-bottom: 12px;
+}
+
+.anpr-empty h3 {
+  font-size: 14px;
+  color: var(--text-primary, #fff);
+  margin: 8px 0;
+}
+
+.anpr-empty p {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.anpr-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.anpr-metrics > div {
+  padding: 16px;
+  border-radius: 11px;
+  border: 1px solid var(--border-color, rgba(140,160,190,.2));
+  background: rgba(70,140,200,.07);
+}
+
+.anpr-metrics span {
+  display: block;
+  font-size: 10px;
+  color: var(--text-secondary, #91a0b5);
+  margin-bottom: 8px;
+}
+
+.anpr-metrics strong {
+  font-size: 27px;
+  color: var(--text-primary, #fff);
+}
+
+.anpr-annotated h3,
+.anpr-result-heading {
+  font-size: 13px;
+  color: var(--text-primary, #fff);
+  margin: 20px 0 10px;
+}
+
+.anpr-result-card {
+  border: 1px solid rgba(60,185,235,.3);
+  border-radius: 13px;
+  padding: 17px;
+  margin-top: 13px;
+  background: linear-gradient(130deg, rgba(25,145,190,.09), rgba(60,120,210,.04));
+}
+
+.anpr-result-top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-secondary, #91a0b5);
+  letter-spacing: 1px;
+}
+
+.anpr-success { color: #36cc91; }
+.anpr-warning { color: #e9b95c; }
+
+.anpr-number-plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #f4f5f1;
+  color: #101820;
+  border: 3px solid #202a33;
+  border-radius: 8px;
+  padding: 13px 8px;
+  margin: 17px 0 12px;
+  min-height: 66px;
+}
+
+.anpr-number-plate strong {
+  font-family: "Courier New", monospace;
+  font-size: clamp(19px, 3vw, 28px);
+  letter-spacing: 2px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.anpr-india {
+  border-right: 2px solid #aab2b4;
+  padding: 9px;
+  color: #1672b9;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.anpr-copy-btn {
+  color: #55d4f7;
+  background: rgba(40,150,210,.08);
+  border: 1px solid rgba(70,190,240,.3);
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.anpr-confidence {
+  margin-top: 16px;
+}
+
+.anpr-confidence > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.anpr-confidence span {
+  color: var(--text-secondary, #91a0b5);
+}
+
+.anpr-confidence strong {
+  color: var(--text-primary, #fff);
+}
+
+.anpr-progress {
+  height: 7px;
+  background: rgba(130,150,180,.17);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.anpr-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #25c6c9, #55aaff);
+}
+
+.anpr-class,
+.anpr-disclaimer {
+  color: var(--text-secondary, #91a0b5);
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+
+@media(max-width: 850px) {
+  .anpr-layout { grid-template-columns: 1fr; }
+}
+
+@media(max-width: 550px) {
+  .anpr { padding: 12px; }
+  .anpr-hero { padding: 21px 17px; }
+  .anpr-panel { padding: 16px; }
+  .anpr-actions { flex-direction: column; }
+  .anpr-detect-btn { min-height: 45px; }
+}
