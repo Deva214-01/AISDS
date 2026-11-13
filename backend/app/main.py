@@ -1,4 +1,4 @@
-from fastapi.middleware.cors import CORSMiddleware
+﻿from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, UploadFile, File
 import shutil
 import uuid
@@ -72,7 +72,7 @@ app.add_middleware(
         origin.strip()
         for origin in os.getenv(
             "FRONTEND_ORIGINS",
-            "http://localhost:5173,http://127.0.0.1:5173"
+            "http://localhost:5173,http://127.0.0.1:5173,https://aisds-1.vercel.app"
         ).split(",")
         if origin.strip()
     ],
@@ -1289,3 +1289,4 @@ def delete_traffic_history():
         return {"status": "success", "message": "Analysis history deleted successfully."}
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"Could not delete history: {exc}")
+
