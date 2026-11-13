@@ -1415,7 +1415,7 @@ const seekToAccidentAlert = (seconds) => {
 
           <section className="helmet-review-panel" aria-live="polite">
             <div className="helmet-review-heading">
-              <div className="helmet-review-icon"><ShieldAlert size={20}/>Â </div>
+              <div className="helmet-review-icon"><ShieldAlert size={20}/></div>
               <div><span className="section-kicker">LIVE DETECTION FEED</span><h3>Helmet violation alerts</h3><p>Newest alerts appear first. Open each record and verify the detection.</p></div>
               <span className={`helmet-review-count ${helmetAlerts.length ? "active" : ""}`}>{helmetAlerts.length} {helmetAlerts.length === 1 ? "ALERT" : "ALERTS"}</span>
             </div>

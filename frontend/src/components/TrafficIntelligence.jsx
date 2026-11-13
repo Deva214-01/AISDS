@@ -151,7 +151,7 @@ export default function TrafficIntelligence({
 
       {cameraError && (
         <div className="ti-error">
-          <span>âš ï¸</span> {cameraError}
+          <span>⚠️</span> {cameraError}
         </div>
       )}
 
@@ -240,7 +240,7 @@ export default function TrafficIntelligence({
                 className="helmet-action-button stop"
                 onClick={onStopCamera}
               >
-                <span>â– </span> Stop Monitoring
+                <span> </span> Stop Monitoring
               </button>
             )}
           </div>
@@ -257,7 +257,7 @@ export default function TrafficIntelligence({
           </div>
 
           <div className="helmet-alert-summary">
-            <div className="helmet-alert-summary-icon">âš ï¸</div>
+            <div className="helmet-alert-summary-icon"></div>
             <div>
               <strong>{alerts.length}</strong>
               <span>Reported helmet alerts</span>

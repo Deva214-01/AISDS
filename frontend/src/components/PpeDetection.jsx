@@ -98,16 +98,16 @@ export default function PpeDetection() {
         </p>
 
         <div className="anpr-tags">
-          <span>â—ˆ YOLO Detection</span>
-          <span>â–£ PPE Analysis</span>
-          <span>â—‰ Safety Monitoring</span>
+          <span>◈ YOLO Detection</span>
+          <span>▣ PPE Analysis</span>
+          <span>◉ Safety Monitoring</span>
         </div>
       </header>
 
       <div className="anpr-layout">
         <section className="anpr-panel">
           <div className="anpr-heading">
-            <div className="anpr-heading-icon">â‡§</div>
+            <div className="anpr-heading-icon">⇧</div>
             <div>
               <h2>Upload Workplace Image</h2>
               <p>Choose an image containing workers or protective equipment.</p>
@@ -141,14 +141,14 @@ export default function PpeDetection() {
 
             {!preview ? (
               <>
-                <div className="anpr-upload-symbol">â†‘</div>
+                <div className="anpr-upload-symbol">↑</div>
                 <h3>Drop your workplace image here</h3>
                 <p>or click to browse files</p>
-                <span>JPG, PNG, WEBP Â· Maximum 10 MB</span>
+                <span>JPG, PNG, WEBP · Maximum 10 MB</span>
               </>
             ) : (
               <>
-                <div className="anpr-upload-symbol">âœ“</div>
+                <div className="anpr-upload-symbol">✓</div>
                 <h3>Image selected successfully</h3>
                 <p>Click to choose another image</p>
               </>
@@ -172,7 +172,7 @@ export default function PpeDetection() {
               onClick={detectPPE}
               disabled={!file || loading}
             >
-              {loading ? "Processing image..." : "âŒ• Detect PPE"}
+              {loading ? "Processing image..." : "⌕ Detect PPE"}
             </button>
 
             <button
@@ -191,12 +191,12 @@ export default function PpeDetection() {
             </div>
           )}
 
-          {error && <div className="anpr-error">âš  {error}</div>}
+          {error && <div className="anpr-error">⚠  {error}</div>}
         </section>
 
         <section className="anpr-panel">
           <div className="anpr-heading">
-            <div className="anpr-heading-icon">âŒ—</div>
+            <div className="anpr-heading-icon">⌗</div>
             <div>
               <h2>PPE Detection Results</h2>
               <p>Detected equipment and potential missing PPE.</p>
@@ -205,7 +205,7 @@ export default function PpeDetection() {
 
           {!result && !loading && (
             <div className="anpr-empty">
-              <div>â–¤</div>
+              <div>◇</div>
               <h3>No results yet</h3>
               <p>Upload a workplace image and start detection.</p>
             </div>
@@ -261,9 +261,9 @@ export default function PpeDetection() {
           status === "MISSING" ? "anpr-warning" :
           status === "PRESENT" ? "anpr-success" : ""
         }>
-          {status === "MISSING" ? "â— MISSING" :
-           status === "PRESENT" ? "â— PRESENT" :
-           "â— NOT DETECTED"}
+          {status === "MISSING" ? "● MISSING" :
+           status === "PRESENT" ? "● PRESENT" :
+           "● NOT DETECTED"}
         </span>
       </div>
       <div className="anpr-confidence">
@@ -298,8 +298,8 @@ export default function PpeDetection() {
                           : "anpr-success"
                       }>
                         {item.category === "missing"
-                          ? "â— MISSING EQUIPMENT"
-                          : "â— EQUIPMENT DETECTED"}
+                          ? "● MISSING EQUIPMENT"
+                          : "● EQUIPMENT DETECTED"}
                       </span>
                     </div>
                     <div className="anpr-confidence">
