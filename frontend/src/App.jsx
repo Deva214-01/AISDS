@@ -1644,6 +1644,7 @@ const seekToAccidentAlert = (seconds) => {
     cameraEnabled={liveCameraEnabled}
     cameraStats={liveCameraStats}
     cameraError={liveCameraError}
+    helmetAlerts={helmetAlerts}
     onStartCamera={() => {
       setLiveCameraError("");
       setLiveCameraEnabled(true);

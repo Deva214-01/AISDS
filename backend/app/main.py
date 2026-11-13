@@ -1,4 +1,4 @@
-﻿from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, UploadFile, File
 import shutil
 import uuid
@@ -13,6 +13,7 @@ import importlib
 import cv2
 from collections import Counter
 import time
+import base64
 # ==========================================
 # PROJECT PATHS
 # ==========================================
@@ -32,7 +33,12 @@ ANNOTATED_VIDEO_PATH = os.path.join(OUTPUT_DIR, "traffic_browser.mp4")
 ML_DIR = os.path.join(BASE_DIR, "ml")
 if ML_DIR not in sys.path:
     sys.path.insert(0, ML_DIR)
-TrafficEngine = importlib.import_module("detection.traffic_engine").TrafficEngine
+def get_traffic_engine_class():
+    return importlib.import_module(
+        "detection.traffic_engine"
+    ).TrafficEngine
+
+
 HISTORY_FILE = os.path.join(
     os.path.dirname(__file__),
     "history.json"
@@ -73,6 +79,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
 )
 # ==========================================
 # SHARED STATE
@@ -128,6 +135,11 @@ HELMET_ALERT_COOLDOWN = 15
 HELMET_CONFIRMATIONS = 3
 helmet_confirmation_counts = {}
 
+# Browser webcam state: frames arrive from the HTTPS frontend.
+browser_frame_lock = threading.Lock()
+browser_camera_active = False
+browser_frame_count = 0
+
 camera_session_started_at = None
 camera_session_saved = True
 # ==========================================
@@ -153,7 +165,7 @@ def process_traffic_in_background():
                 traffic_state["status"] = "processing"
                 traffic_state["error"] = None
         # Create the engine before processing
-        engine = TrafficEngine(
+        engine = get_traffic_engine_class()(
             video_path,
             output_path=ENGINE_OUTPUT_PATH,
             stats_callback=update_live_stats,
@@ -315,7 +327,7 @@ async def upload_traffic_video(file: UploadFile = File(...)):
                     traffic_state["status"] = "processing"
                     traffic_state["error"] = None
             # 1. Process uploaded video with YOLO
-            engine = TrafficEngine(
+            engine = get_traffic_engine_class()(
                 upload_path,
                 output_path=ENGINE_OUTPUT_PATH,
                 stats_callback=update_live_stats,
@@ -662,7 +674,7 @@ def generate_camera_frames():
     global camera_track_positions
     global camera_session_started_at, camera_session_saved
     global congestion_last_changed_at
-    
+
     global congestion_candidate, congestion_candidate_frames
 
 
@@ -674,7 +686,7 @@ def generate_camera_frames():
     camera_session_counts = Counter()
     camera_track_positions = {}
     COUNT_LINE_RATIO = 0.65
-    
+
     congestion_candidate = "UNKNOWN"
     congestion_candidate_frames = 0
 
@@ -803,7 +815,7 @@ def generate_camera_frames():
 
                 occupancy = min(100.0, (vehicle_box_area / frame_area) * 100)
 
-                
+
                 if occupancy < CONGESTION_LOW_MAX:
                     detected_level = "LOW"
                 elif occupancy < CONGESTION_MEDIUM_MAX:
@@ -887,8 +899,8 @@ def generate_camera_frames():
                         "trucks": frame_counts["trucks"],
                     },
                 })
-                
-                
+
+
             # Draw confirmed PPE violations after vehicle annotations.
             for x1, y1, x2, y2, confidence, class_name in confirmed_helmet_boxes:
                 label = f"{class_name.replace('_', ' ').upper()} {confidence:.2f}"
@@ -939,6 +951,251 @@ def generate_camera_frames():
             camera_stats.update({"total_vehicles": 0, "cars": 0, "motorcycles": 0, "buses": 0, "trucks": 0})
         camera_stopped_event.set()
 
+
+@app.post("/api/camera/frame")
+def browser_camera_frame(file: UploadFile = File(...)):
+    global browser_camera_active, browser_frame_count
+    global camera_running, camera_starting
+    global camera_session_started_at, camera_session_saved
+    global congestion_candidate, congestion_candidate_frames
+    global congestion_last_changed_at
+
+    with browser_frame_lock:
+        try:
+            raw = file.file.read(5 * 1024 * 1024 + 1)
+            if not raw or len(raw) > 5 * 1024 * 1024:
+                raise HTTPException(status_code=413, detail="Frame is empty or exceeds 5 MB.")
+
+            import numpy as np
+            image_array = np.frombuffer(raw, dtype=np.uint8)
+            frame = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+            if frame is None:
+                raise HTTPException(status_code=400, detail="Invalid image frame.")
+
+            if not browser_camera_active:
+                if camera_running and not browser_camera_active:
+                    raise HTTPException(status_code=409, detail="Another camera session is running.")
+
+                browser_camera_active = True
+                browser_frame_count = 0
+                camera_session_seen.clear()
+                camera_track_positions.clear()
+                camera_session_counts.clear()
+                helmet_alert_history.clear()
+                congestion_candidate = "UNKNOWN"
+                congestion_candidate_frames = 0
+                congestion_last_changed_at = 0.0
+                camera_session_started_at = datetime.now().astimezone().isoformat()
+                camera_session_saved = False
+                with camera_lock:
+                    camera_stats.update({
+                        "status": "starting", "error": None,
+                        "total_vehicles": 0, "cars": 0,
+                        "motorcycles": 0, "buses": 0, "trucks": 0,
+                        "session_total_vehicles": 0,
+                        "session_cars": 0, "session_motorcycles": 0,
+                        "session_buses": 0, "session_trucks": 0
+                    })
+                    traffic_intelligence["status"] = "running"
+                    traffic_intelligence["congestion"] = "UNKNOWN"
+
+            camera_running = True
+            camera_starting = False
+            browser_frame_count += 1
+
+            vehicle_model = get_camera_model()
+            results = vehicle_model.track(
+                frame,
+                persist=True,
+                classes=list(VEHICLE_CLASSES.keys()),
+                verbose=False,
+                tracker="bytetrack.yaml"
+            )
+
+            frame_height, frame_width = frame.shape[:2]
+            count_line_y = int(frame_height * COUNT_LINE_RATIO)
+            counts = Counter()
+            vehicle_box_area = 0.0
+
+            result = results[0]
+            boxes = result.boxes
+            if boxes is not None:
+                track_ids = boxes.id
+                for index, box in enumerate(boxes):
+                    category = VEHICLE_CLASSES.get(int(box.cls[0].item()))
+                    if not category:
+                        continue
+
+                    counts[category] += 1
+                    x1, y1, x2, y2 = box.xyxy[0].tolist()
+                    vehicle_box_area += max(0, x2 - x1) * max(0, y2 - y1)
+
+                    if track_ids is not None:
+                        track_id = int(track_ids[index].item())
+                        center_y = int((y1 + y2) / 2)
+                        previous_y = camera_track_positions.get(track_id)
+                        crossed = (
+                            previous_y is not None and
+                            ((previous_y < count_line_y <= center_y) or
+                             (previous_y > count_line_y >= center_y))
+                        )
+                        if crossed and track_id not in camera_session_seen:
+                            camera_session_seen.add(track_id)
+                            camera_session_counts[category] += 1
+                        camera_track_positions[track_id] = center_y
+
+            annotated = result.plot() if boxes is not None else frame.copy()
+            cv2.line(annotated, (0, count_line_y),
+                     (frame_width, count_line_y), (0, 255, 255), 2)
+            cv2.putText(annotated, "VEHICLE COUNTING LINE",
+                        (10, max(20, count_line_y - 10)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+
+            confirmed_helmet_boxes = []
+            if browser_frame_count % 5 == 0:
+                helmet_detector = get_helmet_model()
+                helmet_results = helmet_detector.predict(
+                    frame, imgsz=640, conf=0.15,
+                    device="cpu", verbose=False
+                )
+                helmet_boxes = helmet_results[0].boxes
+
+                if helmet_boxes is not None:
+                    raw_ppe = [
+                        (
+                            helmet_detector.names[int(box.cls[0].item())],
+                            round(float(box.conf[0].item()), 3)
+                        )
+                        for box in helmet_boxes
+                    ]
+                    print("LIVE PPE RAW PREDICTIONS:", raw_ppe, flush=True)
+
+                    # Display all PPE predictions, including compliant helmet class.
+                    for ppe_box in helmet_boxes:
+                        class_id = int(ppe_box.cls[0].item())
+                        class_name = str(helmet_detector.names[class_id]).lower()
+                        confidence = float(ppe_box.conf[0].item())
+                        x1, y1, x2, y2 = map(int, ppe_box.xyxy[0].tolist())
+
+                        is_violation = class_name.startswith("no_")
+                        color = (0, 0, 255) if is_violation else (0, 200, 0)
+                        label = f"{class_name.upper()} {confidence:.2f}"
+
+                        cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
+                        cv2.putText(
+                            annotated, label, (x1, max(y1 - 8, 20)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2
+                        )
+
+                    confirmed_helmet_boxes = update_helmet_alerts(helmet_boxes)
+                else:
+                    print("LIVE PPE RAW PREDICTIONS: no detections", flush=True)
+
+            for x1, y1, x2, y2, confidence, class_name in confirmed_helmet_boxes:
+                label = f"{class_name.replace('_', ' ').upper()} {confidence:.2f}"
+                cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                cv2.putText(annotated, label, (x1, max(y1 - 10, 20)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
+            frame_area = max(frame_height * frame_width, 1)
+            occupancy = min(100.0, vehicle_box_area / frame_area * 100.0)
+            if occupancy < CONGESTION_LOW_MAX:
+                detected_level = "LOW"
+            elif occupancy < CONGESTION_MEDIUM_MAX:
+                detected_level = "MEDIUM"
+            else:
+                detected_level = "HIGH"
+
+            if detected_level == congestion_candidate:
+                congestion_candidate_frames += 1
+            else:
+                congestion_candidate = detected_level
+                congestion_candidate_frames = 1
+
+            now_mono = time.monotonic()
+            current_level = traffic_intelligence["congestion"]
+            if current_level == "UNKNOWN":
+                congestion_level = (
+                    congestion_candidate
+                    if congestion_candidate_frames >= CONGESTION_CONFIRM_FRAMES
+                    else "UNKNOWN"
+                )
+                if congestion_level != "UNKNOWN":
+                    congestion_last_changed_at = now_mono
+            elif (
+                congestion_candidate_frames >= CONGESTION_CONFIRM_FRAMES
+                and congestion_candidate != current_level
+                and now_mono - congestion_last_changed_at >= CONGESTION_HOLD_SECONDS
+            ):
+                congestion_level = congestion_candidate
+                congestion_last_changed_at = now_mono
+            else:
+                congestion_level = current_level
+
+            now_iso = datetime.now().astimezone().isoformat()
+            with camera_lock:
+                camera_stats.update({
+                    "status": "running",
+                    "total_vehicles": sum(counts.values()),
+                    "cars": counts["cars"],
+                    "motorcycles": counts["motorcycles"],
+                    "buses": counts["buses"],
+                    "trucks": counts["trucks"],
+                    "session_total_vehicles": sum(camera_session_counts.values()),
+                    "session_cars": camera_session_counts["cars"],
+                    "session_motorcycles": camera_session_counts["motorcycles"],
+                    "session_buses": camera_session_counts["buses"],
+                    "session_trucks": camera_session_counts["trucks"],
+                    "error": None
+                })
+                previous_level = traffic_intelligence["congestion"]
+                if previous_level not in ("UNKNOWN", congestion_level):
+                    message = f"Traffic changed from {previous_level} to {congestion_level}"
+                    traffic_intelligence["recent_events"].insert(0, {
+                        "timestamp": now_iso,
+                        "message": message,
+                        "congestion": congestion_level
+                    })
+                    traffic_intelligence["recent_events"] = (
+                        traffic_intelligence["recent_events"][:MAX_RECENT_TRAFFIC_EVENTS]
+                    )
+                    traffic_intelligence["alert"] = message
+
+                traffic_intelligence.update({
+                    "status": "running",
+                    "occupancy_percent": round(occupancy, 2),
+                    "congestion": congestion_level,
+                    "last_updated": now_iso,
+                    "vehicle_counts": {
+                        "cars": counts["cars"],
+                        "motorcycles": counts["motorcycles"],
+                        "buses": counts["buses"],
+                        "trucks": counts["trucks"]
+                    }
+                })
+
+            ok, buffer = cv2.imencode(
+                ".jpg", annotated,
+                [cv2.IMWRITE_JPEG_QUALITY, 65]
+            )
+            if not ok:
+                raise RuntimeError("Could not encode annotated frame.")
+
+            payload = {
+                "image": base64.b64encode(buffer.tobytes()).decode("ascii"),
+                "stats": dict(camera_stats)
+            }
+            return JSONResponse(content=payload)
+
+        except HTTPException:
+            raise
+        except Exception as exc:
+            with camera_lock:
+                camera_stats.update({"status": "error", "error": str(exc)})
+            print(f"Browser camera frame error: {exc}", flush=True)
+            raise HTTPException(status_code=500, detail=str(exc))
+
+
 @app.get("/api/camera/live")
 def live_camera():
     global camera_starting
@@ -986,6 +1243,14 @@ def live_camera_status():
         }
 @app.post("/api/camera/stop")
 def stop_camera():
+    global browser_camera_active, camera_running, camera_starting
+    with browser_frame_lock:
+        browser_camera_active = False
+        camera_running = False
+        camera_starting = False
+        with camera_lock:
+            if camera_stats.get("status") != "error":
+                camera_stats["status"] = "stopped"
     camera_stop_event.set()
     stopped = camera_stopped_event.wait(timeout=5)
     if not stopped:
@@ -1024,4 +1289,3 @@ def delete_traffic_history():
         return {"status": "success", "message": "Analysis history deleted successfully."}
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"Could not delete history: {exc}")
-

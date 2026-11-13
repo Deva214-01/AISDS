@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import "./TrafficIntelligence.css";
+import BrowserCamera from "./BrowserCamera";
 
 const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
 
@@ -8,37 +9,31 @@ export default function TrafficIntelligence({
   cameraEnabled,
   cameraStats,
   cameraError,
+  helmetAlerts = [],
   onStartCamera,
   onStopCamera,
 }) {
   const [stats, setStats] = useState(null);
-  const [alerts, setAlerts] = useState([]);
+  const alerts = Array.isArray(helmetAlerts) ? helmetAlerts : [];
 
   useEffect(() => {
     let active = true;
 
     const loadData = async () => {
       try {
-        const [statsResponse, alertsResponse] = await Promise.all([
-          fetch(`${API}/api/camera/stats`),
-          fetch(`${API}/api/camera/helmet-alerts`),
-        ]);
+        const statsResponse = await fetch(`${API}/api/camera/stats`);
 
         if (!statsResponse.ok) {
           throw new Error("Camera statistics unavailable");
         }
 
         const statsData = await statsResponse.json();
-        const alertsData = alertsResponse.ok
-          ? await alertsResponse.json()
-          : { alerts: [] };
 
         if (!active) return;
 
         setStats(statsData);
-        setAlerts(alertsData.alerts || []);
       } catch (error) {
-        console.error("Helmet Detection polling error:", error);
+        console.error("Camera statistics polling error:", error);
       }
     };
 
@@ -206,11 +201,7 @@ export default function TrafficIntelligence({
           <div className="helmet-camera-screen">
             {cameraEnabled ? (
               <>
-                <img
-                  className="ti-video"
-                  src={`${API}/api/camera/live`}
-                  alt="Live helmet detection camera feed"
-                />
+                <BrowserCamera enabled={cameraEnabled} />
                 <div className="helmet-camera-overlay">
                   <span>📡 TRAFFICX VISION</span>
                   <span>AI MONITORING</span>

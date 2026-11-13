@@ -1,11 +1,10 @@
-﻿from pathlib import Path
+﻿
+from pathlib import Path
 from threading import Lock
 import re
 
 import cv2
 import numpy as np
-import easyocr
-from ultralytics import YOLO
 
 
 BASE_DIR = Path(__file__).resolve().parents[3]
@@ -22,6 +21,7 @@ _reader_lock = Lock()
 
 OCR_ALLOWLIST = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+
 def normalize_indian_plate(text):
     text = re.sub(r"[^A-Z0-9]", "", (text or "").upper())
 
@@ -31,6 +31,7 @@ def normalize_indian_plate(text):
 
     if re.fullmatch(standard, text) or re.fullmatch(bharat, text):
         return text
+
     return ""
 
 
@@ -48,7 +49,6 @@ def box_iou(a, b):
     return intersection / union if union else 0.0
 
 
-
 def get_number_plate_model():
     global _model
 
@@ -58,6 +58,9 @@ def get_number_plate_model():
                 raise FileNotFoundError(
                     f"License plate model not found: {MODEL_PATH}"
                 )
+
+            # Load Ultralytics only when number plate detection is requested.
+            from ultralytics import YOLO
 
             _model = YOLO(str(MODEL_PATH))
 
@@ -69,12 +72,17 @@ def get_ocr_reader():
 
     with _reader_lock:
         if _reader is None:
+            # Load EasyOCR only when OCR is requested.
+            import easyocr
+
             print("Loading EasyOCR model on CPU...")
+
             _reader = easyocr.Reader(
                 ["en"],
                 gpu=False,
                 verbose=False
             )
+
             print("EasyOCR model loaded successfully.")
 
         return _reader
@@ -91,6 +99,7 @@ def extract_plate_text(crop):
 
     if height < 100:
         scale = max(2, int(100 / max(height, 1)))
+
         crop = cv2.resize(
             crop,
             (width * scale, height * scale),
@@ -210,8 +219,10 @@ def detect_license_plates(image_bytes):
             current_box = (x1, y1, x2, y2)
 
             # Suppress duplicate detections of the same physical plate.
-            if any(box_iou(current_box, old_box) >= 0.45
-                   for old_box in accepted_boxes):
+            if any(
+                box_iou(current_box, old_box) >= 0.45
+                for old_box in accepted_boxes
+            ):
                 continue
 
             accepted_boxes.append(current_box)
