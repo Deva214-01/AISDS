@@ -1,8 +1,12 @@
-﻿fastapi
+﻿--extra-index-url https://download.pytorch.org/whl/cpu
+
+fastapi
 uvicorn[standard]
 python-multipart
-numpy
+numpy<2
 opencv-python-headless
+torch==2.6.0+cpu
+torchvision==0.21.0+cpu
 ultralytics
 easyocr
 imageio-ffmpeg
