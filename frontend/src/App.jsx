@@ -1039,9 +1039,9 @@ const seekToAccidentAlert = (seconds) => {
 
                 <p><strong>Total Vehicles:</strong> {item.total_vehicles ?? 0}</p>
 
-                <p>Cars: {item.cars ?? 0} Â· Motorcycles: {item.motorcycles ?? 0}</p>
+                <p>Cars: {item.cars ?? 0} · Motorcycles: {item.motorcycles ?? 0}</p>
 
-                <p>Buses: {item.buses ?? 0} Â· Trucks: {item.trucks ?? 0}</p>
+                <p>Buses: {item.buses ?? 0} · Trucks: {item.trucks ?? 0}</p>
 
                 <p><strong>Traffic Density:</strong> {item.traffic_density ?? 0}%</p>
 
@@ -1232,7 +1232,7 @@ const seekToAccidentAlert = (seconds) => {
 
         {(trafficIntelligence.recent_events ?? []).length === 0 ? (
           <div className="recent-events-empty">
-            <span>Ã…Â½</span>
+            <span>—</span>
             <strong>No traffic events yet</strong>
             <p>Events will appear here when the congestion level changes.</p>
           </div>
